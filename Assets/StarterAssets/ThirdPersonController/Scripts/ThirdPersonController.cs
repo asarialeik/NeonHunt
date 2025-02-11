@@ -15,6 +15,15 @@ namespace StarterAssets
     public class ThirdPersonController : MonoBehaviour
     {
         public WheelRotation wheelRotation;
+        private float sideTiltAmount = 10f;
+        private float forwardTiltAmount = 15f;
+        private float tiltSmoothTime = 2.5f;
+        private float sprintSideTiltAmount = 20f;
+        private float sprintForwardTiltAmount = 25f;
+        private float sprintTiltSmoothTime = 5f;
+        [SerializeField] private Transform robot;
+        private Quaternion currentTiltRotation;
+
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -217,6 +226,10 @@ namespace StarterAssets
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
+            float targetSideTiltAmount = _input.sprint ? sprintSideTiltAmount : sideTiltAmount;
+            float targetForwardTiltAmount = _input.sprint ? sprintForwardTiltAmount : forwardTiltAmount;
+            float targetTiltSmoothTime = _input.sprint ? sprintTiltSmoothTime : tiltSmoothTime;
+
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
@@ -263,17 +276,29 @@ namespace StarterAssets
 
                 // rotate to face input direction relative to camera position
                 transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+                float tiltAngleZ = Mathf.Clamp(_input.move.y * targetForwardTiltAmount, -targetForwardTiltAmount, targetForwardTiltAmount);
+                float tiltAngleX = Mathf.Clamp(-_input.move.x * targetSideTiltAmount, -targetSideTiltAmount, targetSideTiltAmount);
+
+                Quaternion targetTiltRotation = Quaternion.Euler(-tiltAngleX, robot.localEulerAngles.y, tiltAngleZ);
+
+                // Interpolar suavemente hacia la inclinación objetivo
+                currentTiltRotation = Quaternion.Slerp(currentTiltRotation, targetTiltRotation, Time.deltaTime * targetTiltSmoothTime);
+                robot.localRotation = currentTiltRotation;
+
                 wheelRotation.OnMovement(targetSpeed);
             }
-
+            else
+            {
+                // Volver suavemente a la rotación neutral cuando no hay movimiento
+                currentTiltRotation = Quaternion.Slerp(currentTiltRotation, Quaternion.Euler(0, robot.localEulerAngles.y, 0), Time.deltaTime * targetTiltSmoothTime);
+                robot.localRotation = currentTiltRotation;
+            }
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-            // move the player
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
