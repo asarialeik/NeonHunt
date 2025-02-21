@@ -10,7 +10,7 @@ namespace StarterAssets
 		[Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
-		public bool jump;
+		public bool shoot;
 		public bool sprint;
 
 		[Header("Movement Settings")]
@@ -34,9 +34,9 @@ namespace StarterAssets
 			}
 		}
 
-		public void OnJump(InputValue value)
+		public void OnShoot(InputValue value)
 		{
-			JumpInput(value.isPressed);
+			ShootInput(value.isPressed);
 		}
 
 		public void OnSprint(InputValue value)
@@ -56,9 +56,9 @@ namespace StarterAssets
 			look = newLookDirection;
 		}
 
-		public void JumpInput(bool newJumpState)
+		public void ShootInput(bool newJumpState)
 		{
-			jump = newJumpState;
+			shoot = newJumpState;
 		}
 
 		public void SprintInput(bool newSprintState)

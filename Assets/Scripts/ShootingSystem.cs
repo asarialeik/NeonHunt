@@ -3,45 +3,38 @@ using UnityEngine;
 
 public class ShootingSystem : MonoBehaviour
 {
-    [Header("Disparo")]
+    [Header("Shoot")]
     public Transform firePoint;
     public GameObject projectilePrefab;
     public float fireRate = 1.5f;
     private bool canShoot = true;
 
-    [Header("Detección de Enemigos")]
+    [Header("Enemy detection")]
     public float detectionRadius = 10f;
     public LayerMask enemyLayer;
     public Transform cameraTransform;
 
-    [Header("Efectos")]
+    [Header("Effects")]
     public AudioSource shootSound;
     public ParticleSystem muzzleFlash;
     public Animator reloadAnimator;
     public CameraShake cameraShake;
 
-    private void Update()
+    public void Fire()
     {
-        if (Input.GetButtonDown("Fire1") && canShoot)
+        if (canShoot)
         {
-            Fire();
-        }
-    }
-
-    void Fire()
-    {
-        Transform target = GetClosestEnemy();
-        if (target != null)
-        {
+            print("CanShoot");
+            Transform target = GetClosestEnemy();
             StartCoroutine(ShootCooldown());
 
             GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
             ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
             projectileScript.SetTarget(target);
 
-            muzzleFlash.Play();
-            shootSound.Play();
-            StartCoroutine(cameraShake.Shake(0.1f, 0.2f));
+            //muzzleFlash.Play();
+            //shootSound.Play();
+            //StartCoroutine(cameraShake.Shake(0.1f, 0.2f));
         }
     }
 
@@ -68,7 +61,7 @@ public class ShootingSystem : MonoBehaviour
     IEnumerator ShootCooldown()
     {
         canShoot = false;
-        reloadAnimator.SetTrigger("Reload");
+        //reloadAnimator.SetTrigger("Reload");
         yield return new WaitForSeconds(fireRate);
         canShoot = true;
     }

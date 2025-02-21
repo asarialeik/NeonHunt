@@ -13,6 +13,8 @@ namespace StarterAssets
     public class ThirdPersonController : MonoBehaviour
     {
         [Header("References")]
+        [Tooltip("Shooting system script")]
+        public ShootingSystem shootingSystem;
         [Tooltip("Wheel script component")]
         public WheelRotation wheelRotation;
         [Tooltip("Robot geometry")]
@@ -172,6 +174,7 @@ namespace StarterAssets
             Gravity();
             GroundedCheck();
             Move();
+            Shoot();
         }
 
         private void LateUpdate()
@@ -195,12 +198,6 @@ namespace StarterAssets
                 transform.position.z);
             Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
                 QueryTriggerInteraction.Ignore);
-
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetBool(_animIDGrounded, Grounded);
-            }
         }
 
         private void CameraRotation()
@@ -301,6 +298,15 @@ namespace StarterAssets
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
         }
 
+        private void Shoot()
+        {
+            if (_input.shoot)
+            {
+                shootingSystem.Fire();
+                _input.shoot = false;
+            }
+        }
+
         private void Gravity()
         {
             if (Grounded)
@@ -354,6 +360,7 @@ namespace StarterAssets
         }
         */
 
+        /*        
         private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -365,6 +372,8 @@ namespace StarterAssets
                 }
             }
         }
+        */
+
         /*
         private void OnLand(AnimationEvent animationEvent)
         {
