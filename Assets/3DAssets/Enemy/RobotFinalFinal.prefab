@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1551912628032331844}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RobotFinalFinal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 1498050710586418617}
   - component: {fileID: 2714715951577254202}
   - component: {fileID: 1369091759363811832}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube.006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 7546066875371032449}
   - component: {fileID: 4857825817412149602}
   - component: {fileID: 8292718444163438488}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: 4362524558525785656}
   - component: {fileID: 7142932820286086091}
   - component: {fileID: 8441568465829148785}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,7 +305,7 @@ GameObject:
   - component: {fileID: 855254660478006139}
   - component: {fileID: 5169524308776864544}
   - component: {fileID: 5372387710416023081}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube.004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388,7 +388,7 @@ GameObject:
   - component: {fileID: 633843557230825798}
   - component: {fileID: 5904656552997086035}
   - component: {fileID: 2046286039633317732}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -473,7 +473,7 @@ GameObject:
   - component: {fileID: 548817066242011598}
   - component: {fileID: 5509438328712463283}
   - component: {fileID: 6337042023350444436}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -555,7 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8525968733530327009}
   - component: {fileID: 468385432588068221}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}

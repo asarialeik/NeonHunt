@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ShootingSystem : MonoBehaviour
@@ -20,22 +21,76 @@ public class ShootingSystem : MonoBehaviour
     public Animator reloadAnimator;
     public CameraShake cameraShake;
 
+    [Header("Object Pooling")]
+    public int poolSize = 10;
+    private List<GameObject> projectilePool;
+
+    void Start()
+    {
+        projectilePool = new List<GameObject>();
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject projectile = Instantiate(projectilePrefab);
+            projectile.SetActive(false);
+            projectilePool.Add(projectile);
+        }
+    }
+
     public void Fire()
     {
         if (canShoot)
         {
             print("CanShoot");
             Transform target = GetClosestEnemy();
-            StartCoroutine(ShootCooldown());
+            if (!target)
+            {
+                print("No target");
+            }
+            else
+            {
+                print(target.name);
+                StartCoroutine(ShootCooldown());
 
-            GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-            ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
-            projectileScript.SetTarget(target);
+                GameObject projectile = GetProjectileFromPool();
+                if (projectile != null)
+                {
+                    projectile.transform.position = firePoint.position;
+                    projectile.transform.rotation = firePoint.rotation;
+                    projectile.SetActive(true);
 
-            //muzzleFlash.Play();
-            //shootSound.Play();
-            //StartCoroutine(cameraShake.Shake(0.1f, 0.2f));
+                    ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
+                    projectileScript.SetTarget(target);
+                    projectile.transform.LookAt(target.position);
+                }
+                else
+                {
+                    projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+                    projectilePool.Add(projectile);
+                    projectile.SetActive(true);
+
+                    ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
+                    projectileScript.SetTarget(target);
+                    projectile.transform.LookAt(target.position);
+                }
+
+                //muzzleFlash.Play();
+                //shootSound.Play();
+                //StartCoroutine(cameraShake.Shake(0.1f, 0.2f));
+            }
         }
+    }
+
+
+    GameObject GetProjectileFromPool()
+    {
+        foreach (GameObject projectile in projectilePool)
+        {
+            if (!projectile.activeInHierarchy)
+            {
+                return projectile;
+            }
+        }
+        return null;
     }
 
     Transform GetClosestEnemy()
