@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class ProjectileController : MonoBehaviour
 {
@@ -6,26 +7,44 @@ public class ProjectileController : MonoBehaviour
     public float rotateSpeed = 250f;  // Velocidad de rotación para seguir al objetivo
     public GameObject explosionEffect;
     public ParticleSystem smokeTrail;
+    public float lifeTime = 3f;       // Tiempo antes de desactivarse automáticamente
+
     private Transform target;
+    private LayerMask enemyLayer;
+
+    void OnEnable()
+    {
+        target = null;
+        Physics.SyncTransforms();
+        StartCoroutine(AutoDeactivate());
+    }
+
+    IEnumerator AutoDeactivate()
+    {
+        yield return new WaitForSeconds(lifeTime);
+        DeactivateProjectile();
+    }
 
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
     }
 
+    public void SetEnemyLayer(LayerMask layer)
+    {
+        enemyLayer = layer;
+    }
+
     void Update()
     {
-        if (target == null)
+        if (target != null)
         {
-            DestroyProjectile();
-            return;
+            Vector3 direction = target.position - transform.position;
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+            // Rota suavemente hacia el objetivo
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
         }
-
-        Vector3 direction = target.position - transform.position;
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-        // Rota suavemente hacia el objetivo
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 
         // Avanza hacia adelante
         transform.position += transform.forward * speed * Time.deltaTime;
@@ -33,13 +52,22 @@ public class ProjectileController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //Instantiate(explosionEffect, transform.position, Quaternion.identity);
-        DestroyProjectile();
-        print(other.name);
+        if (((1 << other.gameObject.layer) & enemyLayer) != 0)
+        {
+            other.gameObject.SetActive(false);
+        }
+        print(other.gameObject.name);
+        DeactivateProjectile();
     }
 
-    void DestroyProjectile()
+    void OnCollisionEnter(Collision collision)
     {
-        Destroy(gameObject);
+        print(collision.gameObject.name);
+        DeactivateProjectile();
+    }
+
+    void DeactivateProjectile()
+    {
+        gameObject.SetActive(false);
     }
 }

@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,19 +20,22 @@ public class ShootingSystem : MonoBehaviour
     public AudioSource shootSound;
     public ParticleSystem muzzleFlash;
     public Animator reloadAnimator;
-    public CameraShake cameraShake;
 
     [Header("Object Pooling")]
     public int poolSize = 10;
     private List<GameObject> projectilePool;
 
-    void Start()
+    [Header("Cinemachine Impulse")]
+    public CinemachineImpulseSource impulseSource;
+
+    void Awake()
     {
         projectilePool = new List<GameObject>();
         for (int i = 0; i < poolSize; i++)
         {
             GameObject projectile = Instantiate(projectilePrefab);
             projectile.SetActive(false);
+            projectile.name = "ProyectilInicial";
             projectilePool.Add(projectile);
         }
     }
@@ -40,46 +44,54 @@ public class ShootingSystem : MonoBehaviour
     {
         if (canShoot)
         {
-            print("CanShoot");
             Transform target = GetClosestEnemy();
-            if (!target)
+            StartCoroutine(ShootCooldown());
+
+            GameObject projectile = GetProjectileFromPool();
+            if (projectile != null)
             {
-                print("No target");
+                projectile.transform.position = firePoint.position;
+                projectile.transform.rotation = firePoint.rotation;
+                projectile.SetActive(true);
+
+                ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
+                projectileScript.SetTarget(target);
+                projectileScript.SetEnemyLayer(enemyLayer);
+                if (target)
+                {
+                    projectile.transform.LookAt(target.position);
+                }
             }
             else
             {
-                print(target.name);
-                StartCoroutine(ShootCooldown());
+                projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+                projectilePool.Add(projectile);
+                projectile.SetActive(true);
 
-                GameObject projectile = GetProjectileFromPool();
-                if (projectile != null)
+                ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
+                projectileScript.SetTarget(target);
+                projectileScript.SetEnemyLayer(enemyLayer);
+                if (target)
                 {
-                    projectile.transform.position = firePoint.position;
-                    projectile.transform.rotation = firePoint.rotation;
-                    projectile.SetActive(true);
-
-                    ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
-                    projectileScript.SetTarget(target);
                     projectile.transform.LookAt(target.position);
                 }
-                else
-                {
-                    projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-                    projectilePool.Add(projectile);
-                    projectile.SetActive(true);
+            }
 
-                    ProjectileController projectileScript = projectile.GetComponent<ProjectileController>();
-                    projectileScript.SetTarget(target);
-                    projectile.transform.LookAt(target.position);
-                }
+            //muzzleFlash.Play();
+            //shootSound.Play();
 
-                //muzzleFlash.Play();
-                //shootSound.Play();
-                //StartCoroutine(cameraShake.Shake(0.1f, 0.2f));
+            // Cinemachine Impulse (nuevo camera shake)
+            if (impulseSource != null)
+            {
+                print("Generando Impulso!");
+                impulseSource.GenerateImpulse();
+            }
+            else
+            {
+                print("Impulse Source no asignado!");
             }
         }
     }
-
 
     GameObject GetProjectileFromPool()
     {

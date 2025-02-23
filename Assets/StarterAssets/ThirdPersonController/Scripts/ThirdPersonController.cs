@@ -165,6 +165,8 @@ namespace StarterAssets
 
             // reset our timeouts on start
             _fallTimeoutDelta = FallTimeout;
+
+            _robot.localRotation = Quaternion.Euler(-90, 0, -90);
         }
 
         private void Update()
@@ -278,7 +280,8 @@ namespace StarterAssets
 
                 float tiltAngleZ = Mathf.Clamp(-_input.move.y * targetForwardTiltAmount, targetForwardTiltAmount, targetForwardTiltAmount);
 
-                Quaternion targetTiltRotation = Quaternion.Euler(_robot.localEulerAngles.x, _robot.localEulerAngles.y, tiltAngleZ);
+                Quaternion targetTiltRotation = Quaternion.Euler(-90, _robot.localEulerAngles.y, tiltAngleZ + _robot.localEulerAngles.z);
+
 
                 // interpolate rotation softly
                 _currentTiltRotation = Quaternion.Slerp(_currentTiltRotation, targetTiltRotation, Time.deltaTime * targetTiltSmoothTime);
@@ -293,7 +296,8 @@ namespace StarterAssets
                 _robot.localRotation = _currentTiltRotation;
             }
 
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            Vector3 targetDirection = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward;
+
 
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
         }
