@@ -46,16 +46,8 @@ namespace StarterAssets
         public AudioClip[] FootstepAudioClips;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
-        [Space(10)]
-        [Tooltip("The height the player can jump")]
-        public float JumpHeight = 1.2f;
-
         [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
         public float gravity = -15.0f;
-
-        [Space(10)]
-        [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-        public float JumpTimeout = 0.50f;
 
         [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
         public float FallTimeout = 0.15f;
@@ -165,8 +157,6 @@ namespace StarterAssets
 
             // reset our timeouts on start
             _fallTimeoutDelta = FallTimeout;
-
-            _robot.localRotation = Quaternion.Euler(-90, 0, -90);
         }
 
         private void Update()
@@ -278,9 +268,9 @@ namespace StarterAssets
                 // rotate to face input direction relative to camera position
                 transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
-                float tiltAngleZ = Mathf.Clamp(-_input.move.y * targetForwardTiltAmount, targetForwardTiltAmount, targetForwardTiltAmount);
+                float tiltAngleY = Mathf.Clamp(-_input.move.y * targetForwardTiltAmount, targetForwardTiltAmount, targetForwardTiltAmount);
 
-                Quaternion targetTiltRotation = Quaternion.Euler(-90, _robot.localEulerAngles.y, tiltAngleZ + _robot.localEulerAngles.z);
+                Quaternion targetTiltRotation = Quaternion.Euler(0f, -tiltAngleY, 0f);
 
 
                 // interpolate rotation softly
@@ -292,7 +282,7 @@ namespace StarterAssets
             else
             {
                 // go back to neutral rotation on static player
-                _currentTiltRotation = Quaternion.Slerp(_currentTiltRotation, Quaternion.Euler(0, _robot.localEulerAngles.y, 0), Time.deltaTime * targetTiltSmoothTime);
+                _currentTiltRotation = Quaternion.Slerp(_currentTiltRotation, Quaternion.Euler(0f, 0f, 0f), Time.deltaTime * targetTiltSmoothTime);
                 _robot.localRotation = _currentTiltRotation;
             }
 
