@@ -3,11 +3,9 @@ using System.Collections;
 
 public class ProjectileController : MonoBehaviour
 {
-    public float speed = 15f;         // Velocidad hacia adelante
-    public float rotateSpeed = 250f;  // Velocidad de rotación para seguir al objetivo
-    public GameObject explosionEffect;
-    public ParticleSystem smokeTrail;
-    public float lifeTime = 3f;       // Tiempo antes de desactivarse automáticamente
+    public float speed = 15f;
+    public float rotateSpeed = 250f;
+    public float lifeTime = 3f;
 
     private Transform target;
     private LayerMask enemyLayer;
@@ -52,19 +50,37 @@ public class ProjectileController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (((1 << other.gameObject.layer) & enemyLayer) != 0)
+        WaypointPatrol waypointPatrol = other.GetComponent<WaypointPatrol>()
+            ?? other.GetComponentInParent<WaypointPatrol>()
+            ?? other.GetComponentInChildren<WaypointPatrol>();
+
+        if (waypointPatrol != null)
         {
-            other.gameObject.SetActive(false);
+            waypointPatrol.gameObject.SetActive(false);
+            waypointPatrol.DisabledEnemy();
         }
-        print(other.gameObject.name);
+
         DeactivateProjectile();
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        print(collision.gameObject.name);
-        DeactivateProjectile();
+        if (!collision.gameObject.CompareTag("Player"))
+        {
+            WaypointPatrol waypointPatrol = collision.gameObject.GetComponent<WaypointPatrol>()
+                ?? collision.gameObject.GetComponentInParent<WaypointPatrol>()
+                ?? collision.gameObject.GetComponentInChildren<WaypointPatrol>();
+
+            if (waypointPatrol != null)
+            {
+                waypointPatrol.gameObject.SetActive(false);
+                waypointPatrol.DisabledEnemy();
+            }
+
+            DeactivateProjectile();
+        }
     }
+
 
     void DeactivateProjectile()
     {

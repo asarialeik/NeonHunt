@@ -15,6 +15,7 @@ public class WaypointPatrol : MonoBehaviour
     {
         navMeshAgent.SetDestination (waypoints[0].position);
         navMeshAgent.speed = 2;
+        GameManager.Instance.Register(gameObject);
     }
 
     void Update ()
@@ -32,5 +33,11 @@ public class WaypointPatrol : MonoBehaviour
         {
             navMeshAgent.speed = 0;
         }
+    }
+
+    public void DisabledEnemy()
+    {
+        GameManager.Instance.currentScore += 2;
+        GameManager.Instance.Unregister();
     }
 }

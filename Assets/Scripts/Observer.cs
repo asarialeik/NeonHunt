@@ -1,6 +1,7 @@
  using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Observer : MonoBehaviour
 {
@@ -15,7 +16,6 @@ public class Observer : MonoBehaviour
 
     void OnTriggerEnter (Collider other)
     {
-        print(other);
         if (other.CompareTag("Player"))
         {
             player = other.gameObject;
@@ -44,7 +44,9 @@ public class Observer : MonoBehaviour
             {
                 if (raycastHit.collider.gameObject.CompareTag("Player"))
                 {
-                    print("Caught");
+                    Scene currentScene = SceneManager.GetActiveScene();
+                    SceneManager.LoadScene("GameOver");
+                    SceneManager.UnloadSceneAsync(currentScene.name);
                 }
                 else
                 {

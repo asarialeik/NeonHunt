@@ -90,6 +90,7 @@ public class ShootingSystem : MonoBehaviour
             {
                 print("Impulse Source no asignado!");
             }
+            GameManager.Instance.currentScore -= 2;
         }
     }
 
