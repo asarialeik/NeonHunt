@@ -4,7 +4,7 @@ using System.Collections;
 public class ProjectileController : MonoBehaviour
 {
     public float speed = 15f;
-    public float rotateSpeed = 250f;
+    public float rotateSpeed = 0f;
     public float lifeTime = 3f;
 
     private Transform target;

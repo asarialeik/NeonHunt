@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
+        if (_currentTimeText != null)
+        {
             UpdateUI();
             if (currentTime > 0)
             {
@@ -62,6 +64,7 @@ public class GameManager : MonoBehaviour
                 SceneManager.LoadScene("YouWon");
                 SceneManager.UnloadSceneAsync(currentScene.name);
             }
+        }
     }
 
     void UpdateUI()

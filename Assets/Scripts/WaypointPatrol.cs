@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -39,5 +40,18 @@ public class WaypointPatrol : MonoBehaviour
     {
         GameManager.Instance.currentScore += 2;
         GameManager.Instance.Unregister();
+        float prob = Random.Range(0f, 1f);
+        if (prob <= EnergySystem.Instance.maxEnergyChance && prob > EnergySystem.Instance.maxEnergyChance + EnergySystem.Instance.instantRecoveryChance)
+        {
+            GameObject prefab = EnergySystem.Instance.GetPowerUp1FromPool();
+            prefab.SetActive(true);
+            prefab.transform.position = this.gameObject.transform.position;
+        }
+        else if (prob <= EnergySystem.Instance.maxEnergyChance + EnergySystem.Instance.instantRecoveryChance)
+        {
+            GameObject prefab = EnergySystem.Instance.GetPowerUp2FromPool();
+            prefab.SetActive(true);
+            prefab.transform.position = this.gameObject.transform.position;
+        }
     }
 }

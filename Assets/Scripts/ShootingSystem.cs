@@ -42,7 +42,9 @@ public class ShootingSystem : MonoBehaviour
 
     public void Fire()
     {
-        if (canShoot)
+        EnergySystem.Instance.CanShoot();
+        EnergySystem.Instance.JustShot();
+        if (EnergySystem.Instance.canShoot && canShoot)
         {
             Transform target = GetClosestEnemy();
             StartCoroutine(ShootCooldown());
